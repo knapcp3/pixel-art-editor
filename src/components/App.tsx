@@ -1,16 +1,11 @@
 import React, { Component } from 'react'
-// import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import PixelEditor from './PixelEditor/PixelEditor'
 
-class App extends Component {
+class App extends Component<any, any> {
   public render() {
     return (
       <section className="app-container">
-        XDD
-        {/* <Router>
-          <Switch>
-            <Route path="/login" component={Login} />
-          </Switch>
-        </Router> */}
+        <PixelEditor />
       </section>
     )
   }
