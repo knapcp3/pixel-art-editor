@@ -8,6 +8,7 @@ const width: number = 50
 const height: number = 50
 const startCanvasBg = 'white'
 const startColor = 'black'
+const startTool = 'draw'
 
 class PixelEditor extends Component<any, any> {
   public constructor(props: any) {
@@ -15,7 +16,7 @@ class PixelEditor extends Component<any, any> {
 
     this.state = {
       picture: Picture.empty(width, height, startCanvasBg),
-      tool: null,
+      tool: startTool,
       color: startColor
     }
   }
@@ -26,12 +27,26 @@ class PixelEditor extends Component<any, any> {
     this.setState({
       picture: newPic
     })
-    // console.log(newPic)
+  }
+
+  public handleToolChange = (tool: string) => {
+    console.log(tool)
+    
+    this.setState({
+      tool
+    })
+  }
+
+  public handleColorChange = (color: string) => {
+    console.log(color)
+
+    this.setState({
+      color
+    })
   }
 
   public render() {
     const { picture, tool, color } = this.state
-    // console.log(picture)
     return (
       <section className="app-container">
         <PictureCanvas
@@ -40,7 +55,12 @@ class PixelEditor extends Component<any, any> {
           color={color}
           handlePixelsChange={this.handlePixelsChange}
         />
-        <Controls />
+        <Controls
+          handleToolChange={this.handleToolChange}
+          handleColorChange={this.handleColorChange}
+          color={color}
+          tool={tool}
+        />
       </section>
     )
   }

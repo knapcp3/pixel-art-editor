@@ -1,8 +1,8 @@
 import React, { Component, RefObject } from 'react'
 import IPixel from '../../../models/IPixel.model'
 import IMousePos from '../../../models/IMousePos.model'
-
-const scale: number = 10
+import { getMousePosition } from './../../../modules/helpers'
+import { scale } from '../../../config/config'
 
 class PictureCanvas extends Component<any, any> {
   private pictureCanvasRef: RefObject<HTMLCanvasElement>
@@ -43,14 +43,28 @@ class PictureCanvas extends Component<any, any> {
       return
     }
 
-    const pixels: IPixel[] = []
-    const mousePos: IMousePos = getMousePosition(
-      this.pictureCanvasRef.current!,
-      event
-    )
-    const pixel = { ...mousePos, color: this.props.color }
-    pixels.push(pixel)
-    this.props.handlePixelsChange(pixels)
+    const canvas = this.pictureCanvasRef.current!
+    let mousePos: IMousePos = getMousePosition(canvas, event)
+    let pixel = { ...mousePos, color: this.props.color }
+    this.props.handlePixelsChange([pixel])
+
+    const moved = (moveEv: any) => {
+      if (moveEv.buttons === 0) {
+        canvas.removeEventListener('mousemove', moved)
+      }
+      const lastPos: IMousePos = mousePos
+      mousePos = getMousePosition(canvas, moveEv)
+
+      if (lastPos.x === mousePos.x && lastPos.y === mousePos.y) {
+        return
+      }
+
+      pixel = { ...mousePos, color: this.props.color }
+      this.props.handlePixelsChange([pixel])
+    }
+
+    canvas.addEventListener('mousemove', moved)
+    event.preventDefault()
   }
 
   public render() {
@@ -68,14 +82,3 @@ class PictureCanvas extends Component<any, any> {
 }
 
 export default PictureCanvas
-
-function getMousePosition(elem: HTMLElement, event: any): IMousePos {
-  const { clientX, clientY } = event
-  const { left, top } = elem.getBoundingClientRect()
-  const newPos = {
-    x: Math.floor((clientX - left) / scale),
-    y: Math.floor((clientY - top) / scale)
-  }
-  
-  return newPos
-}
