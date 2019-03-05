@@ -1,4 +1,5 @@
 import IPixel from './models/IPixel.model'
+import IPos from './models/IPos.model'
 
 class Picture {
   public width: number
@@ -26,6 +27,26 @@ class Picture {
       copy[x + y * this.width] = color
     })
     return new Picture(this.width, this.height, copy)
+  }
+
+  public inside(x: number, y: number): boolean {
+    return x >= 0 && y >= 0 && x < this.width && y < this.height
+  }
+
+  public positionsAround(x: number, y: number): IPos[] {
+    const aroundDirections = [
+      { x: 0, y: 1 },
+      { x: 1, y: 0 },
+      { x: 0, y: -1 },
+      { x: -1, y: 0 }
+    ]
+
+    return aroundDirections.map(dir => {
+      return {
+        x: x + dir.x,
+        y: y + dir.y
+      }
+    })
   }
 }
 

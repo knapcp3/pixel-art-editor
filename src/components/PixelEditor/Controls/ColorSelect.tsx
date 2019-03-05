@@ -12,8 +12,13 @@ class ColorSelect extends Component<any, any> {
   public render() {
     const { color } = this.props
     return (
-      <section>
-        <input type="color" value={color} onChange={this.handleColorClick} />
+      <section className="control">
+        <input
+          className="color-select"
+          type="color"
+          value={color}
+          onChange={this.handleColorClick}
+        />
       </section>
     )
   }

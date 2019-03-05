@@ -1,5 +1,5 @@
 import React, { Component, RefObject } from 'react'
-import IMousePos from '../../../models/IMousePos.model'
+import IPos from '../../../models/IPos.model'
 import { getMousePosition } from './../../../modules/helpers'
 import { scale } from '../../../config/config'
 import Picture from '../../../Picture'
@@ -34,14 +34,18 @@ class PictureCanvas extends Component<any, any> {
     }
 
     const canvas = this.pictureCanvasRef.current!
-    let mousePos: IMousePos = getMousePosition(canvas, event)
+    let mousePos: IPos = getMousePosition(canvas, event)
     const toolOnMove = this.props.handlePosChange(mousePos)
+
+    if (!toolOnMove) {
+      return
+    }
 
     const moved = (moveEv: any) => {
       if (moveEv.buttons === 0) {
         canvas.removeEventListener('mousemove', moved)
       }
-      const lastPos: IMousePos = mousePos
+      const lastPos: IPos = mousePos
       mousePos = getMousePosition(canvas, moveEv)
 
       if (lastPos.x === mousePos.x && lastPos.y === mousePos.y) {
