@@ -84,19 +84,13 @@ class PixelEditor extends Component<any, any> {
     const targetColor = picture.pixel(clickPos.x, clickPos.y)
     const drawn: IPixel[] = []
 
-    let count = 0
-
     const doFill = ({ x, y }: IPos) => {
-      count++
       const pixel = { x, y, color }
-      // console.log(pixel)
+
       visitArray[x + y * picture.width] = true
       drawn.push(pixel)
-
       const neighboursPos = picture.positionsAround(x, y)
-      // console.log(neighboursPos)
       for (const nPos of neighboursPos) {
-        // return
         const { x: nX, y: nY } = nPos
         if (
           picture.inside(nX, nY) &&
@@ -109,38 +103,13 @@ class PixelEditor extends Component<any, any> {
     }
 
     doFill(clickPos)
-    console.log(count)
     this.setState({ picture: picture.draw(drawn) })
+  }
 
-    /////////////////////////////////
-
-    // var around = [
-    //   { dx: -1, dy: 0 },
-    //   { dx: 1, dy: 0 },
-    //   { dx: 0, dy: -1 },
-    //   { dx: 0, dy: 1 }
-    // ]
-    // const { x, y } = clickPos
-    // const { picture, color } = this.state
-    // const targetColor = picture.pixel(clickPos.x, clickPos.y)
-    // const drawn = [{ x, y, color }]
-    // for (let done = 0; done < drawn.length; done++) {
-    //   for (let { dx, dy } of around) {
-    //     const x = drawn[done].x + dx
-    //     const y = drawn[done].y + dy
-    //     if (
-    //       x >= 0 &&
-    //       x < picture.width &&
-    //       y >= 0 &&
-    //       y < picture.height &&
-    //       picture.pixel(x, y) === targetColor &&
-    //       !drawn.some(p => p.x === x && p.y === y)
-    //     ) {
-    //       drawn.push({ x, y, color })
-    //     }
-    //   }
-    // }
-    // this.setState({ picture: picture.draw(drawn) })
+  private pick = (pos: IPos) => {
+    this.setState({
+      color: this.state.picture.pixel(pos.x, pos.y)
+    })
   }
 
   public render() {
