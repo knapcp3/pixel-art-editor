@@ -1,15 +1,33 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: yellow;
-//   font-size: $base-font-size;
+  background-color: rgb(246, 246, 246);
   font-family: 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
     'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.controls {
+  width: 500px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tool-select {
+  width: 150px;
+}
+
+.color-select {
+  width: 50px;
+  height: 100%;
 }
