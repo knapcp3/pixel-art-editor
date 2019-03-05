@@ -1,6 +1,6 @@
 # Pixel art editor
 
-App based on project from Marijn Haverbeke's book "Eloquent JavaScript", modified to React.
+App based on project from Marijn Haverbeke's book "Eloquent JavaScript", transformed from vanilla js to React.
 
 
 ### `yarn dev`
