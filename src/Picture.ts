@@ -1,8 +1,8 @@
 import IPixel from './models/IPixel.model'
 
 class Picture {
-  private width: number
-  private height: number
+  public width: number
+  public height: number
   private pixels: string[]
 
   constructor(width: number, height: number, pixels: string[]) {
