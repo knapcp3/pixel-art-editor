@@ -1,39 +1,32 @@
 import React, { Component } from 'react'
-import Select from 'react-select'
 import { tools } from '../../../config/config'
-import ISelectOption from './../../../models/ISelectOption.model'
-
-const toolOptions = tools.map(tool => {
-  return { value: tool, label: tool }
-})
+import { Select } from 'antd'
 
 class ToolSelect extends Component<any, any> {
   public constructor(props: any) {
     super(props)
   }
 
-  public handleToolClick = (
-    selectedOption?: ISelectOption | ISelectOption[] | null
-  ) => {
-    if (Array.isArray(selectedOption)) {
-      throw new Error('Unexpected type passed to ReactSelect onChange handler')
-    }
-    const opt = (selectedOption && selectedOption.value) || ''
-    this.props.handleToolChange(opt)
+  public handleToolClick = (tool: string) => {
+    this.props.handleToolChange(tool)
   }
 
   public render() {
     const { tool } = this.props
-    const toolOption = toolOptions.find(t => t.value === tool)
     return (
       <section className="control">
+        <span>🖌 Tool: </span>
         <Select
-          value={toolOption}
+          value={tool}
           onChange={this.handleToolClick}
-          options={toolOptions}
-          name="tool"
           className="tool-select"
-        />
+        >
+          {tools.map(t => (
+            <Select.Option value={t} key={t}>
+              {t}
+            </Select.Option>
+          ))}
+        </Select>
       </section>
     )
   }

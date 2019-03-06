@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Input } from 'antd'
 
 class ColorSelect extends Component<any, any> {
   public constructor(props: any) {
@@ -13,9 +14,10 @@ class ColorSelect extends Component<any, any> {
     const { color } = this.props
     return (
       <section className="control">
-        <input
-          className="color-select"
+        <span>🎨 Color: </span>
+        <Input
           type="color"
+          className="color-select"
           value={color}
           onChange={this.handleColorClick}
         />

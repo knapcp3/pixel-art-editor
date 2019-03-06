@@ -1,18 +1,26 @@
 import React, { Component } from 'react'
+import {
+  drawOnCanvas,
+  createNode,
+  pictureFromImage
+} from './../../modules/helpers'
 import PictureCanvas from './PictureCanvas/PictureCanvas'
 import Controls from './Controls/Controls'
 import Picture from './../../Picture'
 import IPos from '../../models/IPos.model'
 import IPixel from '../../models/IPixel.model'
 
-const width: number = 50
+const width: number = 70
 const height: number = 50
 const startCanvasBg = '#ffffff'
 const startColor = '#000000'
 const startTool = 'draw'
 
 class PixelEditor extends Component<any, any> {
-  public constructor(props: any) {
+  private done: any = []
+  private doneAt: number = 0
+
+  constructor(props: any) {
     super(props)
 
     this.state = {
@@ -20,6 +28,17 @@ class PixelEditor extends Component<any, any> {
       tool: startTool,
       color: startColor
     }
+  }
+
+  public setStateWithHistory(newState: any, cb?: () => void) {
+    if (Date.now() - this.doneAt > 1000) {
+      if (this.done.length > 100) {
+        this.done.shift()
+      }
+      this.done.push(this.state.picture)
+      this.doneAt = Date.now()
+    }
+    this.setState(newState, () => cb && cb())
   }
 
   public handlePosChange = (pos: IPos) => {
@@ -42,11 +61,60 @@ class PixelEditor extends Component<any, any> {
     })
   }
 
+  public saveImg = () => {
+    const canvas = createNode('canvas', {})
+    drawOnCanvas(this.state.picture, canvas, 1)
+    const link = createNode('a', {
+      href: canvas.toDataURL(),
+      download: 'pixelart.png'
+    })
+
+    canvas.appendChild(link)
+
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
+  public loadImg = () => {
+    const input = createNode('input', {
+      type: 'file',
+      onchange: () => {
+        const fileReader: FileReader = new FileReader()
+        const file = input.files[0]
+        fileReader.onloadend = () => {
+          const img = new Image()
+          img.onload = () => {
+            this.setStateWithHistory({
+              picture: pictureFromImage(img)
+            })
+          }
+
+          img.src = (fileReader.result as string) || ''
+        }
+        fileReader.readAsDataURL(file)
+      }
+    })
+
+    document.body.appendChild(input)
+    input.click()
+    input.remove()
+  }
+
+  public undo = () => {
+    if (this.done.length === 0) {
+      return
+    }
+    this.setState({
+      picture: this.done.pop()
+    })
+  }
+
   private draw = (startPos: IPos) => {
     const drawPixel = (pos: IPos) => {
       const { picture, color } = this.state
       const pixel = { x: pos.x, y: pos.y, color }
-      this.setState({
+      this.setStateWithHistory({
         picture: picture.draw([pixel])
       })
     }
@@ -69,7 +137,7 @@ class PixelEditor extends Component<any, any> {
         }
       }
 
-      this.setState({
+      this.setStateWithHistory({
         picture: picture.draw(drawn)
       })
     }
@@ -103,7 +171,7 @@ class PixelEditor extends Component<any, any> {
     }
 
     doFill(clickPos)
-    this.setState({ picture: picture.draw(drawn) })
+    this.setStateWithHistory({ picture: picture.draw(drawn) })
   }
 
   private pick = (pos: IPos) => {
@@ -115,7 +183,7 @@ class PixelEditor extends Component<any, any> {
   public render() {
     const { picture, tool, color } = this.state
     return (
-      <section className="app-container">
+      <section className="editor-container">
         <PictureCanvas
           picture={picture}
           tool={tool}
@@ -125,8 +193,12 @@ class PixelEditor extends Component<any, any> {
         <Controls
           handleToolChange={this.handleToolChange}
           handleColorChange={this.handleColorChange}
+          saveImg={this.saveImg}
+          loadImg={this.loadImg}
+          undo={this.undo}
           color={color}
           tool={tool}
+          disabledUndo={this.done.length === 0}
         />
       </section>
     )
