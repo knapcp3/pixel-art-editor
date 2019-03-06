@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
+import {
+  drawOnCanvas,
+  createNode,
+  pictureFromImage
+} from './../../modules/helpers'
 import PictureCanvas from './PictureCanvas/PictureCanvas'
 import Controls from './Controls/Controls'
 import Picture from './../../Picture'
 import IPos from '../../models/IPos.model'
 import IPixel from '../../models/IPixel.model'
 
-const width: number = 50
+const width: number = 70
 const height: number = 50
 const startCanvasBg = '#ffffff'
 const startColor = '#000000'
@@ -40,6 +45,48 @@ class PixelEditor extends Component<any, any> {
     this.setState({
       color
     })
+  }
+
+  public saveImg = () => {
+    const canvas = createNode('canvas', {})
+    drawOnCanvas(this.state.picture, canvas, 1)
+    const link = createNode('a', {
+      href: canvas.toDataURL(),
+      download: 'pixelart.png'
+    })
+
+    canvas.appendChild(link)
+
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+  }
+
+  public loadImg = () => {
+    const input = createNode('input', {
+      type: 'file',
+      onchange: () => {
+        const fileReader: FileReader = new FileReader()
+        const file = input.files[0]
+        fileReader.onloadend = () => {
+          const img = new Image()
+          img.onload = () =>
+            this.setState({
+              picture: pictureFromImage(img)
+            })
+          img.src = (fileReader.result as string) || ''
+        }
+        fileReader.readAsDataURL(file)
+      }
+    })
+
+    document.body.appendChild(input)
+    input.click()
+    input.remove()
+  }
+
+  public undo = () => {
+    console.log('undo')
   }
 
   private draw = (startPos: IPos) => {
@@ -115,7 +162,7 @@ class PixelEditor extends Component<any, any> {
   public render() {
     const { picture, tool, color } = this.state
     return (
-      <section className="app-container">
+      <section className="editor-container">
         <PictureCanvas
           picture={picture}
           tool={tool}
@@ -125,6 +172,9 @@ class PixelEditor extends Component<any, any> {
         <Controls
           handleToolChange={this.handleToolChange}
           handleColorChange={this.handleColorChange}
+          saveImg={this.saveImg}
+          loadImg={this.loadImg}
+          undo={this.undo}
           color={color}
           tool={tool}
         />
