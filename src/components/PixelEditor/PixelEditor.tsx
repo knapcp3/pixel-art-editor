@@ -9,13 +9,14 @@ import Controls from './Controls/Controls'
 import Picture from './../../Picture'
 import IPos from '../../models/IPos.model'
 import IPixel from '../../models/IPixel.model'
-import { tools } from './../../config/config'
-
-const width: number = 70
-const height: number = 50
-const startCanvasBg = '#ffffff'
-const startColor = '#000000'
-const startTool = 'draw'
+import {
+  tools,
+  startCanvasBg,
+  startCanvasHeight as height,
+  startCanvasWidth as width,
+  startColor,
+  startTool
+} from './../../config/config'
 
 class PixelEditor extends Component<any, any> {
   private done: any = []
@@ -31,12 +32,12 @@ class PixelEditor extends Component<any, any> {
     }
   }
 
-  // public componentDidMount() {
-  //   document.addEventListener('keydown', this.keysHandler)
-  // }
-  // public componentWillUnmount() {
-  //   document.removeEventListener('keydown', this.keysHandler)
-  // }
+	public componentDidMount() {
+    document.addEventListener('keydown', this.keysHandler)
+  }
+  public componentWillUnmount() {
+    document.removeEventListener('keydown', this.keysHandler)
+  }
 
   public setStateWithHistory(newState: any, cb?: () => void) {
     if (Date.now() - this.doneAt > 1000) {
@@ -207,8 +208,6 @@ class PixelEditor extends Component<any, any> {
     return (
       <section
         className="editor-container"
-        tabIndex={0}
-        onKeyDown={this.keysHandler}
       >
         <PictureCanvas
           picture={picture}
