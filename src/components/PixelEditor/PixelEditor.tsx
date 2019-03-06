@@ -31,7 +31,13 @@ class PixelEditor extends Component<any, any> {
   }
 
   public setStateWithHistory(newState: any, cb?: () => void) {
-    this.done.push(this.state.picture)
+    if (Date.now() - this.doneAt > 1000) {
+      if (this.done.length > 100) {
+        this.done.shift()
+      }
+      this.done.push(this.state.picture)
+      this.doneAt = Date.now()
+    }
     this.setState(newState, () => cb && cb())
   }
 
@@ -96,6 +102,9 @@ class PixelEditor extends Component<any, any> {
   }
 
   public undo = () => {
+    if (this.done.length === 0) {
+      return
+    }
     this.setState({
       picture: this.done.pop()
     })
