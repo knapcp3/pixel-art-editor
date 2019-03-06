@@ -14,7 +14,8 @@ class Controls extends Component<any, any> {
       loadImg,
       undo,
       color,
-      tool
+      tool,
+      disabledUndo
     } = this.props
     return (
       <section className="controls">
@@ -22,7 +23,7 @@ class Controls extends Component<any, any> {
         <ColorSelect color={color} handleColorChange={handleColorChange} />
         <SaveBtn saveImg={saveImg} />
         <LoadBtn loadImg={loadImg} />
-        <UndoBtn undo={undo} />
+        <UndoBtn undo={undo} disabled={disabledUndo} />
       </section>
     )
   }

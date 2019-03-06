@@ -17,7 +17,10 @@ const startColor = '#000000'
 const startTool = 'draw'
 
 class PixelEditor extends Component<any, any> {
-  public constructor(props: any) {
+  private done: any = []
+  private doneAt: number = 0
+
+  constructor(props: any) {
     super(props)
 
     this.state = {
@@ -25,6 +28,11 @@ class PixelEditor extends Component<any, any> {
       tool: startTool,
       color: startColor
     }
+  }
+
+  public setStateWithHistory(newState: any, cb?: () => void) {
+    this.done.push(this.state.picture)
+    this.setState(newState, () => cb && cb())
   }
 
   public handlePosChange = (pos: IPos) => {
@@ -70,10 +78,12 @@ class PixelEditor extends Component<any, any> {
         const file = input.files[0]
         fileReader.onloadend = () => {
           const img = new Image()
-          img.onload = () =>
-            this.setState({
+          img.onload = () => {
+            this.setStateWithHistory({
               picture: pictureFromImage(img)
             })
+          }
+
           img.src = (fileReader.result as string) || ''
         }
         fileReader.readAsDataURL(file)
@@ -86,14 +96,16 @@ class PixelEditor extends Component<any, any> {
   }
 
   public undo = () => {
-    console.log('undo')
+    this.setState({
+      picture: this.done.pop()
+    })
   }
 
   private draw = (startPos: IPos) => {
     const drawPixel = (pos: IPos) => {
       const { picture, color } = this.state
       const pixel = { x: pos.x, y: pos.y, color }
-      this.setState({
+      this.setStateWithHistory({
         picture: picture.draw([pixel])
       })
     }
@@ -116,7 +128,7 @@ class PixelEditor extends Component<any, any> {
         }
       }
 
-      this.setState({
+      this.setStateWithHistory({
         picture: picture.draw(drawn)
       })
     }
@@ -150,7 +162,7 @@ class PixelEditor extends Component<any, any> {
     }
 
     doFill(clickPos)
-    this.setState({ picture: picture.draw(drawn) })
+    this.setStateWithHistory({ picture: picture.draw(drawn) })
   }
 
   private pick = (pos: IPos) => {
@@ -177,6 +189,7 @@ class PixelEditor extends Component<any, any> {
           undo={this.undo}
           color={color}
           tool={tool}
+          disabledUndo={this.done.length === 0}
         />
       </section>
     )
