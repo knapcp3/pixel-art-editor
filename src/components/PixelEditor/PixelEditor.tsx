@@ -9,6 +9,7 @@ import Controls from './Controls/Controls'
 import Picture from './../../Picture'
 import IPos from '../../models/IPos.model'
 import IPixel from '../../models/IPixel.model'
+import { tools } from './../../config/config'
 
 const width: number = 70
 const height: number = 50
@@ -30,6 +31,13 @@ class PixelEditor extends Component<any, any> {
     }
   }
 
+  // public componentDidMount() {
+  //   document.addEventListener('keydown', this.keysHandler)
+  // }
+  // public componentWillUnmount() {
+  //   document.removeEventListener('keydown', this.keysHandler)
+  // }
+
   public setStateWithHistory(newState: any, cb?: () => void) {
     if (Date.now() - this.doneAt > 1000) {
       if (this.done.length > 100) {
@@ -39,6 +47,20 @@ class PixelEditor extends Component<any, any> {
       this.doneAt = Date.now()
     }
     this.setState(newState, () => cb && cb())
+  }
+
+  public keysHandler = (event: any) => {
+    const key: string = event.key
+    tools.forEach(tool => {
+      if (tool.charAt(0) === key) {
+        this.setState({ tool })
+        return
+      }
+    })
+
+    if ((event.ctrlKey || event.metaKey) && key === 'z') {
+      this.undo()
+    }
   }
 
   public handlePosChange = (pos: IPos) => {
@@ -183,7 +205,11 @@ class PixelEditor extends Component<any, any> {
   public render() {
     const { picture, tool, color } = this.state
     return (
-      <section className="editor-container">
+      <section
+        className="editor-container"
+        tabIndex={0}
+        onKeyDown={this.keysHandler}
+      >
         <PictureCanvas
           picture={picture}
           tool={tool}
