@@ -2,19 +2,23 @@ import React, { Component } from 'react'
 import {
   drawOnCanvas,
   createNode,
-  pictureFromImage
+  pictureFromImage,
+  distanceBetween
 } from './../../modules/helpers'
 import PictureCanvas from './PictureCanvas/PictureCanvas'
 import Controls from './Controls/Controls'
 import Picture from './../../Picture'
 import IPos from '../../models/IPos.model'
 import IPixel from '../../models/IPixel.model'
-
-const width: number = 70
-const height: number = 50
-const startCanvasBg = '#ffffff'
-const startColor = '#000000'
-const startTool = 'draw'
+import {
+  tools,
+  startCanvasBg,
+  startCanvasHeight as height,
+  startCanvasWidth as width,
+  startColor,
+  startTool,
+  canvasScale
+} from './../../config/config'
 
 class PixelEditor extends Component<any, any> {
   private done: any = []
@@ -30,6 +34,13 @@ class PixelEditor extends Component<any, any> {
     }
   }
 
+  public componentDidMount() {
+    document.addEventListener('keydown', this.keysHandler)
+  }
+  public componentWillUnmount() {
+    document.removeEventListener('keydown', this.keysHandler)
+  }
+
   public setStateWithHistory(newState: any, cb?: () => void) {
     if (Date.now() - this.doneAt > 1000) {
       if (this.done.length > 100) {
@@ -41,11 +52,25 @@ class PixelEditor extends Component<any, any> {
     this.setState(newState, () => cb && cb())
   }
 
+  public keysHandler = (event: any) => {
+    const key: string = event.key
+    tools.forEach(tool => {
+      if (tool.charAt(0) === key) {
+        this.setState({ tool })
+        return
+      }
+    })
+
+    if ((event.ctrlKey || event.metaKey) && key === 'z') {
+      this.undo()
+    }
+  }
+
   public handlePosChange = (pos: IPos) => {
     const { tool } = this.state
     const toolFunction = this[tool]
     if (toolFunction) {
-      return toolFunction(pos)
+      return toolFunction(pos, canvasScale)
     }
   }
 
@@ -63,6 +88,7 @@ class PixelEditor extends Component<any, any> {
 
   public saveImg = () => {
     const canvas = createNode('canvas', {})
+
     drawOnCanvas(this.state.picture, canvas, 1)
     const link = createNode('a', {
       href: canvas.toDataURL(),
@@ -70,7 +96,6 @@ class PixelEditor extends Component<any, any> {
     })
 
     canvas.appendChild(link)
-
     document.body.appendChild(link)
     link.click()
     link.remove()
@@ -178,6 +203,35 @@ class PixelEditor extends Component<any, any> {
     this.setState({
       color: this.state.picture.pixel(pos.x, pos.y)
     })
+  }
+
+  private circle = (startPos: IPos) => {
+    const { picture, color } = this.state
+
+    let drawCircle = (pos: IPos) => {
+      const pixels: any = []
+      const r = distanceBetween(startPos, pos)
+      const startX = Math.floor(Math.max(0, startPos.x - r))
+      const endX = Math.ceil(Math.min(startPos.x + r, picture.width))
+      const startY = Math.floor(Math.max(0, startPos.y - r))
+      const endY = Math.ceil(Math.min(startPos.y + r, picture.height))
+    
+      for (let y = startY; y <= endY; y++) {
+        for (let x = startX; x <= endX; x++) {
+          const p = { x, y }
+          if (distanceBetween(p, startPos) <= r) {
+            pixels.push({ ...p, color })
+          }
+        }
+      }
+
+      this.setStateWithHistory({
+        picture: picture.draw(pixels)
+      })
+    }
+
+    drawCircle(startPos)
+    return drawCircle
   }
 
   public render() {

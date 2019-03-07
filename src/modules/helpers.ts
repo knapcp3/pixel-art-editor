@@ -16,16 +16,36 @@ export function getMousePosition(
   return newPos
 }
 
+export function distanceBetween(pos1: IPos, pos2: IPos) {
+  return Math.sqrt(
+    Math.pow(Math.abs(pos1.x - pos2.x), 2) +
+      Math.pow(Math.abs(pos1.y - pos2.y), 2)
+  )
+}
+
 export function drawOnCanvas(
   picture: Picture,
   canvas: HTMLCanvasElement,
-  scale: number
+  scale: number,
+  prevPicture?: Picture
 ) {
+  if (
+    !prevPicture ||
+    (picture.width !== prevPicture.width ||
+      picture.height !== prevPicture.height)
+  ) {
+    canvas.width = picture.width * scale
+    canvas.height = picture.height * scale
+    prevPicture = undefined
+  }
   const cx: CanvasRenderingContext2D = canvas.getContext('2d')!
+
   for (let y = 0; y < picture.height; y++) {
     for (let x = 0; x < picture.width; x++) {
-      cx.fillStyle = picture.pixel(x, y)
-      cx.fillRect(x * scale, y * scale, scale, scale)
+      if (!prevPicture || picture.pixel(x, y) !== prevPicture.pixel(x, y)) {
+        cx.fillStyle = picture.pixel(x, y)
+        cx.fillRect(x * scale, y * scale, scale, scale)
+      }
     }
   }
 }
@@ -63,3 +83,10 @@ export function pictureFromImage(image: HTMLImageElement) {
   }
   return new Picture(width, height, pixels)
 }
+
+export const aroundDirections = [
+  { x: 0, y: 1 },
+  { x: 1, y: 0 },
+  { x: 0, y: -1 },
+  { x: -1, y: 0 }
+]

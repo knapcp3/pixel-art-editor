@@ -20,7 +20,12 @@ class PictureCanvas extends Component<any, any> {
     const { picture } = this.props
 
     if (picture !== prevProps.picture) {
-      drawOnCanvas(picture, this.pictureCanvasRef.current!, canvasScale)
+      drawOnCanvas(
+        picture,
+        this.pictureCanvasRef.current!,
+        canvasScale,
+        prevProps.picture
+      )
     }
   }
 
@@ -40,8 +45,9 @@ class PictureCanvas extends Component<any, any> {
     const moved = (moveEv: any) => {
       if (moveEv.buttons === 0) {
         canvas.removeEventListener('mousemove', moved)
+        return
       }
-      const lastPos: IPos = mousePos
+      const lastPos: IPos = { ...mousePos }
       mousePos = getMousePosition(canvas, moveEv, canvasScale)
 
       if (lastPos.x === mousePos.x && lastPos.y === mousePos.y) {
@@ -56,13 +62,9 @@ class PictureCanvas extends Component<any, any> {
   }
 
   public render() {
-    const { picture } = this.props
-
     return (
       <section>
         <canvas
-          width={picture.width * canvasScale}
-          height={picture.height * canvasScale}
           ref={this.pictureCanvasRef}
           onMouseDown={this.handleMouseClick}
         />
