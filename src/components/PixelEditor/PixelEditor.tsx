@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import {
   drawOnCanvas,
   createNode,
-  pictureFromImage
+  pictureFromImage,
+  aroundDirections
 } from './../../modules/helpers'
 import PictureCanvas from './PictureCanvas/PictureCanvas'
 import Controls from './Controls/Controls'
@@ -32,7 +33,7 @@ class PixelEditor extends Component<any, any> {
     }
   }
 
-	public componentDidMount() {
+  public componentDidMount() {
     document.addEventListener('keydown', this.keysHandler)
   }
   public componentWillUnmount() {
@@ -86,7 +87,7 @@ class PixelEditor extends Component<any, any> {
 
   public saveImg = () => {
     const canvas = createNode('canvas', {})
-    
+
     drawOnCanvas(this.state.picture, canvas, 1)
     const link = createNode('a', {
       href: canvas.toDataURL(),
@@ -203,12 +204,22 @@ class PixelEditor extends Component<any, any> {
     })
   }
 
+  private circle = (startPos: IPos) => {
+    function drawCircle(pos: IPos) {
+      const r = 0
+    }
+
+    drawCircle(startPos)
+    return drawCircle
+    // this.setState({
+    //   color: this.state.picture.pixel(pos.x, pos.y)
+    // })
+  }
+
   public render() {
     const { picture, tool, color } = this.state
     return (
-      <section
-        className="editor-container"
-      >
+      <section className="editor-container">
         <PictureCanvas
           picture={picture}
           tool={tool}

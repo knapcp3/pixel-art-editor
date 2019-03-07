@@ -1,5 +1,6 @@
 import IPixel from './models/IPixel.model'
 import IPos from './models/IPos.model'
+import { aroundDirections } from './modules/helpers'
 
 class Picture {
   public width: number
@@ -34,13 +35,6 @@ class Picture {
   }
 
   public positionsAround(x: number, y: number): IPos[] {
-    const aroundDirections = [
-      { x: 0, y: 1 },
-      { x: 1, y: 0 },
-      { x: 0, y: -1 },
-      { x: -1, y: 0 }
-    ]
-
     return aroundDirections.map(dir => {
       return {
         x: x + dir.x,
