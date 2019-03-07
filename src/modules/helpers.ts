@@ -22,6 +22,15 @@ export function drawOnCanvas(
   scale: number,
   prevPicture?: Picture
 ) {
+  if (
+    !prevPicture ||
+    (picture.width !== prevPicture.width ||
+      picture.height !== prevPicture.height)
+  ) {
+    canvas.width = picture.width * scale
+    canvas.height = picture.height * scale
+    prevPicture = undefined
+  }
   const cx: CanvasRenderingContext2D = canvas.getContext('2d')!
 
   for (let y = 0; y < picture.height; y++) {

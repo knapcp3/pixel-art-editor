@@ -20,7 +20,12 @@ class PictureCanvas extends Component<any, any> {
     const { picture } = this.props
 
     if (picture !== prevProps.picture) {
-      drawOnCanvas(picture, this.pictureCanvasRef.current!, canvasScale, prevProps.picture)
+      drawOnCanvas(
+        picture,
+        this.pictureCanvasRef.current!,
+        canvasScale,
+        prevProps.picture
+      )
     }
   }
 
@@ -56,13 +61,9 @@ class PictureCanvas extends Component<any, any> {
   }
 
   public render() {
-    const { picture } = this.props
-
     return (
       <section>
         <canvas
-          width={picture.width * canvasScale}
-          height={picture.height * canvasScale}
           ref={this.pictureCanvasRef}
           onMouseDown={this.handleMouseClick}
         />

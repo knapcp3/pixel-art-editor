@@ -86,6 +86,7 @@ class PixelEditor extends Component<any, any> {
 
   public saveImg = () => {
     const canvas = createNode('canvas', {})
+    
     drawOnCanvas(this.state.picture, canvas, 1)
     const link = createNode('a', {
       href: canvas.toDataURL(),
@@ -93,7 +94,6 @@ class PixelEditor extends Component<any, any> {
     })
 
     canvas.appendChild(link)
-
     document.body.appendChild(link)
     link.click()
     link.remove()
