@@ -3,7 +3,7 @@ import {
   drawOnCanvas,
   createNode,
   pictureFromImage,
-  aroundDirections
+  distanceBetween
 } from './../../modules/helpers'
 import PictureCanvas from './PictureCanvas/PictureCanvas'
 import Controls from './Controls/Controls'
@@ -16,7 +16,8 @@ import {
   startCanvasHeight as height,
   startCanvasWidth as width,
   startColor,
-  startTool
+  startTool,
+  canvasScale
 } from './../../config/config'
 
 class PixelEditor extends Component<any, any> {
@@ -69,7 +70,7 @@ class PixelEditor extends Component<any, any> {
     const { tool } = this.state
     const toolFunction = this[tool]
     if (toolFunction) {
-      return toolFunction(pos)
+      return toolFunction(pos, canvasScale)
     }
   }
 
@@ -205,15 +206,32 @@ class PixelEditor extends Component<any, any> {
   }
 
   private circle = (startPos: IPos) => {
-    function drawCircle(pos: IPos) {
-      const r = 0
+    const { picture, color } = this.state
+
+    let drawCircle = (pos: IPos) => {
+      const pixels: any = []
+      const r = distanceBetween(startPos, pos)
+      const startX = Math.floor(Math.max(0, startPos.x - r))
+      const endX = Math.ceil(Math.min(startPos.x + r, picture.width))
+      const startY = Math.floor(Math.max(0, startPos.y - r))
+      const endY = Math.ceil(Math.min(startPos.y + r, picture.height))
+    
+      for (let y = startY; y <= endY; y++) {
+        for (let x = startX; x <= endX; x++) {
+          const p = { x, y }
+          if (distanceBetween(p, startPos) <= r) {
+            pixels.push({ ...p, color })
+          }
+        }
+      }
+
+      this.setStateWithHistory({
+        picture: picture.draw(pixels)
+      })
     }
 
     drawCircle(startPos)
     return drawCircle
-    // this.setState({
-    //   color: this.state.picture.pixel(pos.x, pos.y)
-    // })
   }
 
   public render() {

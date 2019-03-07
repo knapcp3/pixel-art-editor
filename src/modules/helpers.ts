@@ -16,6 +16,13 @@ export function getMousePosition(
   return newPos
 }
 
+export function distanceBetween(pos1: IPos, pos2: IPos) {
+  return Math.sqrt(
+    Math.pow(Math.abs(pos1.x - pos2.x), 2) +
+      Math.pow(Math.abs(pos1.y - pos2.y), 2)
+  )
+}
+
 export function drawOnCanvas(
   picture: Picture,
   canvas: HTMLCanvasElement,

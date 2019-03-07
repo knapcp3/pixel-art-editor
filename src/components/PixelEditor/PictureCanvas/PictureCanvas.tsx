@@ -45,8 +45,9 @@ class PictureCanvas extends Component<any, any> {
     const moved = (moveEv: any) => {
       if (moveEv.buttons === 0) {
         canvas.removeEventListener('mousemove', moved)
+        return
       }
-      const lastPos: IPos = mousePos
+      const lastPos: IPos = { ...mousePos }
       mousePos = getMousePosition(canvas, moveEv, canvasScale)
 
       if (lastPos.x === mousePos.x && lastPos.y === mousePos.y) {
