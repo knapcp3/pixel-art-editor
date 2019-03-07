@@ -20,7 +20,7 @@ class PictureCanvas extends Component<any, any> {
     const { picture } = this.props
 
     if (picture !== prevProps.picture) {
-      drawOnCanvas(picture, this.pictureCanvasRef.current!, canvasScale)
+      drawOnCanvas(picture, this.pictureCanvasRef.current!, canvasScale, prevProps.picture)
     }
   }
 
