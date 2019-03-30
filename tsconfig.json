@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "build/dist",
     "module": "esnext",
-    "target": "es5",
-    "lib": ["es6", "dom"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "preserve",
@@ -29,6 +26,7 @@
   "exclude": [
     "node_modules",
     "build",
+    "dist",
     "scripts",
     "acceptance-tests",
     "webpack",
