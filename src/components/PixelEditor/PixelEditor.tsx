@@ -6,7 +6,8 @@ import {
   distanceBetween
 } from './../../modules/helpers'
 import PictureCanvas from './PictureCanvas/PictureCanvas'
-import Controls from './Controls/Controls'
+import ToolSelect from './Controls/ToolSelect'
+
 import Picture from './../../Picture'
 import IPos from '../../models/IPos.model'
 import IPixel from '../../models/IPixel.model'
@@ -19,6 +20,10 @@ import {
   startTool,
   canvasScale
 } from './../../config/config'
+import ColorSelect from './Controls/ColorSelect'
+import SaveBtn from './Controls/SaveBtn'
+import LoadBtn from './Controls/LoadBtn'
+import UndoBtn from './Controls/UndoBtn'
 
 class PixelEditor extends Component<any, any> {
   private done: any = []
@@ -215,7 +220,7 @@ class PixelEditor extends Component<any, any> {
       const endX = Math.ceil(Math.min(startPos.x + r, picture.width))
       const startY = Math.floor(Math.max(0, startPos.y - r))
       const endY = Math.ceil(Math.min(startPos.y + r, picture.height))
-    
+
       for (let y = startY; y <= endY; y++) {
         for (let x = startX; x <= endX; x++) {
           const p = { x, y }
@@ -244,16 +249,16 @@ class PixelEditor extends Component<any, any> {
           color={color}
           handlePosChange={this.handlePosChange}
         />
-        <Controls
-          handleToolChange={this.handleToolChange}
-          handleColorChange={this.handleColorChange}
-          saveImg={this.saveImg}
-          loadImg={this.loadImg}
-          undo={this.undo}
-          color={color}
-          tool={tool}
-          disabledUndo={this.done.length === 0}
-        />
+        <section className="controls">
+          <ToolSelect tool={tool} handleToolChange={this.handleToolChange} />
+          <ColorSelect
+            color={color}
+            handleColorChange={this.handleColorChange}
+          />
+          <SaveBtn saveImg={this.saveImg} />
+          <LoadBtn loadImg={this.loadImg} />
+          <UndoBtn undo={this.undo} disabled={this.done.length === 0} />
+        </section>
       </section>
     )
   }
